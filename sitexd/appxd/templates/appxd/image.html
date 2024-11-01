@@ -1,0 +1,87 @@
+<h3>Image {{image.title}}:</h3>
+
+<svg
+    width="{{ image.width }}"
+    height="{{ image.height }}"
+    viewBox="0 0 {{ image.width }} {{ image.height }}"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+>
+    {% for rect in image.rectangle_set.all %}
+    <rect
+        x="{{ rect.x }}"
+        y="{{ rect.y }}"
+        width="{{ rect.width }}"
+        height="{{ rect.height }}"
+        fill="{{ rect.fill_color}}"
+    ></rect>
+    {% endfor %}
+</svg>
+
+{% if user.is_authenticated and user in image.artists.all %}
+<h4>Data</h4>
+<h5>Size</h5>
+{{ image.width }}x{{ image.height }}
+<h5>Rectangles</h5>
+<table>
+    <thead>
+        <tr>
+            <th>x</th>
+            <th>y</th>
+            <th>width</th>
+            <th>height</th>
+            <th>color</th>
+            <th>action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rect in image.rectangle_set.all %}
+        <tr>
+            <td>{{ rect.x }}</td>
+            <td>{{ rect.y }}</td>
+            <td>{{ rect.width }}</td>
+            <td>{{ rect.height }}</td>
+            <td>{{ rect.fill_color }}</td>
+            <td>
+                <a href="{% url 'appxd:delete_rectangle' image.id rect.id %}">delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+
+{% comment %} {% for rect in image.rectangle_set.all %} {{ rect.x }} {{ rect.y }} {{rect.width }} {{ rect.height }}
+<a href="{% url 'appxd:delete_rectangle' image.id rect.id %}"> delete </a>
+<br />
+{% endfor %} {% endcomment %}
+
+<h3>Add new rectangle</h3>
+<form method="post" action="{% url 'appxd:add_rectangle' image.id %}">
+    {% csrf_token %}
+    <label for="x">x:</label>
+    <input type="number" id="x" name="x" required />
+    <br />
+
+    <label for="y">y:</label>
+    <input type="number" id="y" name="y" required />
+    <br />
+
+    <label for="width">width:</label>
+    <input type="number" id="width" name="width" required />
+    <br />
+
+    <label for="height">height:</label>
+    <input type="number" id="height" name="height" required />
+    <br />
+
+    <label for="fill_color">Fill color:</label>
+    <input type="color" name="fill_color" id="fill_color" required />
+    <br />
+
+    <button type="submit">Add rectangle</button>
+</form>
+{% endif %}
+
